@@ -1,0 +1,182 @@
+{% if config.debug is defined %}debug: {{ config.debug }} 
+{% endif %}
+{% if config.v is defined %}v: {{ config.v }}
+{% endif %}
+{% if config.vmodule is defined %}vmodule: {{ config.vmodule }}
+{% endif %}
+{% if config.log is defined %}log: {{ config.log }}
+{% endif %}
+{% if config.alsologtostderr is defined %}alsologtostderr: {{config.alsologtostderr}}
+{% endif %}
+{% if config.bind_address is defined %}bind-address: {{ config.bind_address }}
+{% endif %}
+{% if config.https_listen_port is defined %}https-listen-port: {{ config.https_listen_port }}
+{% endif %}
+{% if config.advertise_address is defined %}advertise-address: {{ config.advertise_address }}
+{% endif %}
+{% if config.advertise_port is defined %}advertise-port: {{ config.advertise_port }}
+{% endif %}
+{% if config.tls_san is defined %}tls-san: {{ config.tls_san }}
+{% endif %}
+{% if config.data_dir is defined %}data-dir: {{ config.data_dir }}
+{% endif %}
+{% if config.cluster_cidr is defined %}cluster-cidr: {{ config.cluster_cidr }}
+{% endif %}
+{% if config.service_cidr is defined %}service-cidr: {{ config.service_cidr }}
+{% endif %}
+{% if config.service_node_port_range is defined %}service-node-port-range: {{ config.service_node_port_range }}
+{% endif %}
+{% if config.cluster_dns is defined %}cluster-dns: {{ config.cluster_dns }}
+{% endif %}
+{% if config.cluster_domain is defined %}cluster-domain: {{ config.cluster_domain }}
+{% endif %}
+{% if config.flannel_backend is defined %}flannel-backend: {{ config.flannel_backend }}
+{% endif %}
+{% if config.flannel_ipv6_masq is defined %}flannel-ipv6-masq: {{config.flannel_ipv6_masq}} 
+{% endif %}
+{% if config.flannel_external_ip is defined %}flannel-external-ip: {{config.flannel_external_ip}} 
+{% endif %}
+{% if config.egress_selector_mode is defined %}egress-selector-mode: {{ config.egress_selector_mode }}
+{% endif %}
+{% if config.servicelb_namespace is defined %}servicelb-namespace: {{ config.servicelb_namespace }}
+{% endif %}
+{% if config.write_kubeconfig is defined %}write-kubeconfig: {{ config.write_kubeconfig }}
+{% endif %}
+{% if config.write_kubeconfig_mode is defined %}write-kubeconfig-mode: {{ config.write_kubeconfig_mode }}
+{% endif %}
+{% if config.token is defined %}token: {{ config.token }}
+{% endif %}
+{% if config.token_file is defined %}token-file: {{ config.token_file }}
+{% endif %}
+{% if config.agent_token is defined %}agent-token: {{ config.agent_token }}
+{% endif %}
+{% if config.agent_token_file is defined %}agent-token-file: {{ config.agent_token_file }}
+{% endif %}
+{% if config.server is defined %}server: {{ config.server }}
+{% endif %}
+{% if config.cluster_reset is defined %}cluster-reset: {{config.cluster_reset}} 
+{% endif %}
+{% if config.cluster_reset_restore_path is defined %}cluster-reset-restore-path: {{ config.cluster_reset_restore_path }}
+{% endif %}
+{% if config.kube_apiserver_arg is defined %}kube-apiserver-arg: {{ config.kube_apiserver_arg }}
+{% endif %}
+{% if config.etcd_arg is defined %}etcd-arg: {{ config.etcd_arg }}
+{% endif %}
+{% if config.kube_controller_manager_arg is defined %}kube-controller-manager-arg: {{ config.kube_controller_manager_arg }}
+{% endif %}
+{% if config.kube_scheduler_arg is defined %}kube-scheduler-arg: {{ config.kube_scheduler_arg }}
+{% endif %}
+{% if config.kube_cloud_controller_manager_arg is defined %}kube-cloud-controller-manager-arg: {{ config.kube_cloud_controller_manager_arg }}
+{% endif %}
+{% if config.datastore_endpoint is defined %}datastore-endpoint: {{ config.datastore_endpoint }}
+{% endif %}
+{% if config.datastore_cafile is defined %}datastore-cafile: {{ config.datastore_cafile }}
+{% endif %}
+{% if config.datastore_certfile is defined %}datastore-certfile: {{ config.datastore_certfile }}
+{% endif %}
+{% if config.datastore_keyfile is defined %}datastore-keyfile: {{ config.datastore_keyfile }}
+{% endif %}
+{% if config.etcd_expose_metrics is defined %}etcd-expose-metrics: {{config.etcd_expose_metrics}} 
+{% endif %}
+{% if config.etcd_disable_snapshots is defined %}etcd-disable-snapshots: {{config.etcd_disable_snapshots}} 
+{% endif %}
+{% if config.etcd_snapshot_name is defined %}etcd-snapshot-name: {{ config.etcd_snapshot_name }}
+{% endif %}
+{% if config.etcd_snapshot_schedule_cron is defined %}etcd-snapshot-schedule-cron: {{ config.etcd_snapshot_schedule_cron }}
+{% endif %}
+{% if config.etcd_snapshot_retention is defined %}etcd-snapshot-retention: {{ config.etcd_snapshot_retention }}
+{% endif %}
+{% if config.etcd_snapshot_dir is defined %}etcd-snapshot-dir: {{ config.etcd_snapshot_dir }}
+{% endif %}
+{% if config.etcd_snapshot_compress is defined %}etcd-snapshot-compress: {{config.etcd_snapshot_compress}} 
+{% endif %}
+{% if config.etcd_s3 is defined %}etcd-s3: {{config.etcd_s3}}
+{% endif %}
+{% if config.etcd_s3_endpoint is defined %}etcd-s3-endpoint: {{ config.etcd_s3_endpoint }}
+{% endif %}
+{% if config.etcd_s3_endpoint_ca is defined %}etcd-s3-endpoint-ca: {{ config.etcd_s3_endpoint_ca }}
+{% endif %}
+{% if config.etcd_s3_skip_ssl_verify is defined %}etcd-s3-skip-ssl-verify: {{config.etcd_s3_skip_ssl_verify}}
+{% endif %}
+{% if config.etcd_s3_access_key is defined %}etcd-s3-access-key: {{ config.etcd_s3_access_key }}
+{% endif %}
+{% if config.etcd_s3_secret_key is defined %}etcd-s3-secret-key: {{ config.etcd_s3_secret_key }}
+{% endif %}
+{% if config.etcd_s3_bucket is defined %}etcd-s3-bucket: {{ config.etcd_s3_bucket }}
+{% endif %}
+{% if config.etcd_s3_region is defined %}etcd-s3-region: {{ config.etcd_s3_region }}
+{% endif %}
+{% if config.etcd_s3_folder is defined %}etcd-s3-folder: {{ config.etcd_s3_folder }}
+{% endif %}
+{% if config.etcd_s3_insecure is defined %}etcd-s3-insecure: {{config.etcd_s3_insecure}}
+{% endif %}
+{% if config.etcd_s3_timeout is defined %}etcd-s3-timeout: {{ config.etcd_s3_timeout }}
+{% endif %}
+{% if config.default_local_storage_path is defined %}default-local-storage-path: {{ config.default_local_storage_path }}
+{% endif %}
+{% if config.disable is defined %}disable: {{ config.disable }}
+{% endif %}
+{% if config.disable_scheduler is defined %}disable-scheduler: {{config.disable_scheduler}}
+{% endif %}
+{% if config.disable_cloud_controller is defined %}disable-cloud-controller: {{config.disable_cloud_controller}}
+{% endif %}
+{% if config.disable_kube_proxy is defined %}disable-kube-proxy: {{config.disable_kube_proxy}}
+{% endif %}
+{% if config.disable_network_policy is defined %}disable-network-policy: {{config.disable_network_policy}}
+{% endif %}
+{% if config.disable_helm_controller is defined %}disable-helm-controller: {{config.disable_helm_controller}}
+{% endif %}
+{% if config.node_name is defined %}node-name: {{ config.node_name }}
+{% endif %}
+{% if config.with_node_id is defined %}with-node-id: {{config.with_node_id}}
+{% endif %}
+{% if config.node_label is defined %}node-label: {{ config.node_label }}
+{% endif %}
+{% if config.node_taint is defined %}node-taint: {{ config.node_taint }}
+{% endif %}
+{% if config.image_credential_provider_bin_dir is defined %}image-credential-provider-bin-dir {{ config.image_credential_provider_bin_dir }}
+{% endif %}
+{% if config.image_credential_provider_config is defined %}image-credential-provider-config {{ config.image_credential_provider_config }}
+{% endif %}
+{% if config.docker is defined %}docker: {{config.docker}}
+{% endif %}
+{% if config.container_runtime_endpoint is defined %}container-runtime-endpoint: {{ config.container_runtime_endpoint }}
+{% endif %}
+{% if config.pause_image is defined %}pause-image: {{ config.pause_image }}
+{% endif %}
+{% if config.snapshotter is defined %}snapshotter: {{ config.snapshotter }}
+{% endif %}
+{% if config.private_registry is defined %}private-registry: {{ config.private_registry }}
+{% endif %}
+{% if config.system_default_registry is defined %}system-default-registry: {{ config.system_default_registry }}
+{% endif %}
+{% if config.node_ip is defined %}node-ip: {{ config.node_ip }}
+{% endif %}
+{% if config.node_external_ip is defined %}node-external-ip: {{ config.node_external_ip }}
+{% endif %}
+{% if config.resolv_conf is defined %}resolv-conf: {{ config.resolv_conf }}
+{% endif %}
+{% if config.flannel_iface is defined %}flannel-iface: {{ config.flannel_iface }}
+{% endif %}
+{% if config.flannel_conf is defined %}flannel-conf: {{ config.flannel_conf }}
+{% endif %}
+{% if config.flannel_cni_conf is defined %}flannel-cni-conf: {{ config.flannel_cni_conf }}
+{% endif %}
+{% if config.kubelet_arg is defined %}kubelet-arg: {{ config.kubelet_arg }}
+{% endif %}
+{% if config.kube_proxy_arg is defined %}kube-proxy-arg: {{ config.kube_proxy_arg }}
+{% endif %}
+{% if config.protect_kernel_defaults is defined %}protect-kernel-defaults: {{config.protect_kernel_defaults}}
+{% endif %}
+{% if config.secrets_encryption is defined %}secrets-encryption: {{config.secrets_encryption}}
+{% endif %}
+{% if config.enable_pprof is defined %}enable-pprof: {{config.enable_pprof}}
+{% endif %}
+{% if config.rootless is defined %}rootless: {{config.rootless}}
+{% endif %}
+{% if config.prefer_bundled_bin is defined %}prefer-bundled-bin: {{config.prefer_bundled_bin}}
+{% endif %}
+{% if config.selinux is defined %}selinux: {{config.selinux}}
+{% endif %}
+{% if config.lb_server_port is defined %}lb-server-port: {{ config.lb_server_port }}
+{% endif %}

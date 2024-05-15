@@ -1,0 +1,71 @@
+---
+- name: Get k3s installed version
+  ansible.builtin.command: k3s --version
+  register: k3s_version_output
+  changed_when: false
+  ignore_errors: true
+
+- name: Set k3s installed version
+  when: k3s_version_output.rc == 0
+  ansible.builtin.set_fact:
+    installed_k3s_version: "{{ k3s_version_output.stdout_lines[0].split(' ')[2] }}"
+
+- name: Download artifact only if needed
+  when: k3s_version_output.rc != 0 or installed_k3s_version is version(k3s_version, '<') and airgap_dir is undefined
+  block:
+    - name: Download K3s install script
+      ansible.builtin.get_url:
+        url: https://get.k3s.io/
+        timeout: 120
+        dest: /usr/local/bin/k3s-install.sh
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Download K3s binary
+      ansible.builtin.command:
+        cmd: /usr/local/bin/k3s-install.sh
+      environment:
+        INSTALL_K3S_SKIP_START: "true"
+        INSTALL_K3S_VERSION: "{{ k3s_version }}"
+        INSTALL_K3S_EXEC: "agent"
+      changed_when: true
+
+- name: Setup config file
+  block:
+    - name: Make config directory
+      ansible.builtin.file:
+        path: "/home/{{ ansible_user }}/.k3s"
+        state: directory
+        mode: 0755
+
+    - name: Copy config values
+      ansible.builtin.template:
+        src: "k3s-config-agent.yml.j2"
+        dest: "/home/{{ ansible_user }}/.k3s/config.yml"
+        owner: root
+        group: root
+        mode: 0644
+
+- name: Adjust Agent Config file
+  block:
+    - name: Set token
+      ansible.builtin.lineinfile:
+        path: "/home/{{ ansible_user }}/.k3s/config.yml"
+        regexp: "^token:"
+        line: "token: {{ config.token }}"
+        backrefs: yes
+
+    - name: Set server
+      ansible.builtin.lineinfile:
+        path: "/home/{{ ansible_user }}/.k3s/config.yml"
+        regexp: "^server:"
+        line: "server: https://{{ hostvars[groups['server'][0]]['ansible_host'] }}:{{ config.https_listen_port }}"
+        backrefs: yes
+
+- name: Enable and check k3s service
+  ansible.builtin.systemd:
+    name: k3s
+    daemon_reload: true
+    state: started
+    enabled: true

@@ -1,0 +1,16 @@
+---
+- name: Manage K3S Cluster
+  hosts: all
+  become: true
+  vars_files:
+    - vars/main.yml
+
+  tasks:
+    - name: Validate operation value
+      assert:
+        that:
+          - operation in ['cluster', 'agent', 'reset', 'reboot', 'upgrade', 'setup']
+        fail_msg: "Invalid operation specified. Must be 'cluster', 'agent', 'reset', 'reboot', 'setup' or 'upgrade'."
+
+    - name: "Starting {{ operation }} operation"
+      include_tasks: tasks/{{ operation }}.yml

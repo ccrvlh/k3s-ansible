@@ -1,0 +1,10 @@
+---
+- name: Check cluster health
+  hosts: server, agent
+  become: true
+  gather_facts: true
+  serial: 1
+  tasks:
+    - name: Checking
+      debug:
+        msg: "Checking cluster health"

@@ -1,0 +1,72 @@
+---
+all:
+  children:
+    server:
+      hosts:
+        cluster-1:
+          ansible_host: 192.16.16.32
+        cluster-2:
+          ansible_host: 192.16.16.33
+        cluster-3:
+          ansible_host: 192.16.16.34
+    agent:
+      hosts:
+
+    loadbalancer:
+      hosts:
+
+  vars:
+    ansible_port: 22
+    ansible_user: root
+    ansible_python_interpreter: /usr/bin/python3
+    cluster_cidr: "{{ config['cluster_cidr'] | default('10.42.0.0/16') }}"
+    service_cidr: "{{ config['service_cidr'] | default('10.43.0.0/16') }}"
+    kubeconfig: ~/.kube/config.new # noqa var-naming[no-role-prefix]
+    user_kubectl: true # noqa var-naming[no-role-prefix]
+    cluster_context: k3s-ansible
+
+    # Environment variables
+    # Those will be set on each node during the setup process
+    # you can use this to override the default values
+    # or the values that are being set on the configuration file
+    env_vars:
+      ENV_VAR1: VALUE1
+      ENV_VAR2: VALUE2
+
+    # Configuration variables
+    # It will be passed directly to the k3s configuration file
+    # See https://docs.k3s.io/installation/configuration#configuration-file
+    config:
+      version: v1.29.4+k3s1
+      token: "mytoken"
+      debug: "false"
+      https_listen_port: 6443
+      write_kubeconfig: "/home/{{ ansible_user }}/.kube/config"
+      write_kubeconfig_mode: "0644"
+      node_external: "{{ hostvars[groups['server'][0]]['ansible_host'] }}"
+
+    # Some additional manifests to be applied after installation
+    # Helpful for initial setup of the cluster
+    manifests:
+      - "./setup/manifests/traefik.yaml"
+      - "./setup/manifests/nginx.yaml"
+
+    # Helm charts to be installed after installation
+    # Helpful for initial setup of the cluster
+    charts:
+      - name: "traefik"
+        version: "9.0.0"
+        namespace: "kube-system"
+        values: "./charts/traefik/values.yaml"
+
+    # Containerd can be configured to connect to private registries and use them to pull images as needed by the kubelet.
+    # YAML here will be placed as the content of /etc/rancher/k3s/registries.yaml
+    # See https://docs.k3s.io/installation/private-registry
+    private_registry: |
+      mirrors:
+        "registry.example.com":
+          endpoint:
+            - "https://registry.example.com"
+      config: |
+        auths:
+          registry.example.com:

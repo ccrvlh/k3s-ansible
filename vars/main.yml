@@ -1,0 +1,27 @@
+---
+setup:
+  cluster_cidr: "{{ (server_config_yaml | from_yaml)['cluster-cidr'] | default('10.42.0.0/16') }}" # noqa var-naming[no-role-prefix]
+  service_cidr: "{{ (server_config_yaml | from_yaml)['service-cidr'] | default('10.43.0.0/16') }}" # noqa var-naming[no-role-prefix]
+  api_port: 6443 # noqa var-naming[no-role-prefix]
+
+server:
+  k3s_server_location: "/var/lib/rancher/k3s"
+  systemd_dir: "/etc/systemd/system" # noqa var-naming[no-role-prefix]
+  api_port: 6443 # noqa var-naming[no-role-prefix]
+  kubeconfig: ~/.kube/config.new # noqa var-naming[no-role-prefix]
+  user_kubectl: true # noqa var-naming[no-role-prefix]
+  cluster_context: k3s-ansible # noqa var-naming[no-role-prefix]
+
+agent:
+  k3s_server_location: "/var/lib/rancher/k3s" # noqa var-naming[no-role-prefix]
+  systemd_dir: "/etc/systemd/system" # noqa var-naming[no-role-prefix]
+  api_port: 6443 # noqa var-naming[no-role-prefix]
+
+upgrade:
+  systemd_dir: /etc/systemd/system # noqa var-naming[no-role-prefix]
+
+reboot:
+  systemd_dir: /etc/systemd/system # noqa var-naming[no-role-prefix]
+
+reset:
+  systemd_dir: /etc/systemd/system # noqa var-naming[no-role-prefix]
