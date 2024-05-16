@@ -17,9 +17,19 @@
     state: absent
   when: "'server' in group_names"
 
-- name: Remove user kubeconfig
+- name: Remove k3s folder
   ansible.builtin.file:
-    path: ~{{ ansible_user }}/.kube/config
+    path: /home/{{ ansible_user }}/.k3s
+    state: absent
+
+- name: Remove rancher folder
+  ansible.builtin.file:
+    path: /home/{{ ansible_user }}/rancher
+    state: absent
+
+- name: Remove Kube folder
+  ansible.builtin.file:
+    path: /home/{{ ansible_user }}/.kube
     state: absent
 
 - name: Remove main installation folder
