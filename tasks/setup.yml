@@ -1,4 +1,9 @@
 ---
+- name: Set hostname to match the inventory hostname
+  become: yes
+  ansible.builtin.hostname:
+    name: "{{ inventory_hostname }}"
+
 - name: Enforce minimum Ansible version
   ansible.builtin.assert:
     that:
@@ -6,12 +11,14 @@
     msg: "Minimum ansible-core version required is 2.14"
 
 - name: Install Dependent Ubuntu Packages
+  become: true
   when: ansible_distribution in ['Ubuntu']
   ansible.builtin.apt:
     name: policycoreutils # Used by install script to restore SELinux context
     update_cache: true
 
 - name: Enable IPv4 forwarding
+  become: true
   ansible.posix.sysctl:
     name: net.ipv4.ip_forward
     value: "1"
@@ -19,6 +26,7 @@
     reload: true
 
 - name: Enable IPv6 forwarding
+  become: true
   ansible.posix.sysctl:
     name: net.ipv6.conf.all.forwarding
     value: "1"
@@ -67,17 +75,20 @@
       loop: "{{ (cluster_cidr + ',' + service_cidr) | split(',') }}"
 
 - name: Check for Apparmor existence
+  become: true
   ansible.builtin.stat:
     path: /sys/module/apparmor/parameters/enabled
   register: apparmor_enabled
 
 - name: Check if Apparmor is enabled
+  become: true
   when: apparmor_enabled.stat.exists
   ansible.builtin.command: cat /sys/module/apparmor/parameters/enabled
   register: apparmor_status
   changed_when: false
 
 - name: Install Apparmor Parser [Debian]
+  become: true
   when:
     - ansible_distribution == 'Debian'
     - ansible_facts['distribution_major_version'] == "11"
@@ -92,6 +103,7 @@
     manager: auto
 
 - name: If iptables v1.8.0-1.8.4, warn user # noqa ignore-errors
+  become: true
   when:
     - ansible_facts.packages['iptables'] is defined
     - ansible_facts.packages['iptables'][0]['version'] is version('1.8.5', '<')
@@ -106,7 +118,7 @@
   file:
     path: "/home/{{ ansible_user }}/.k3s"
     state: directory
-    mode: "0755"
+    owner: "{{ ansible_user }}"
 
 - name: Setup extra manifests
   when: extra_manifests is defined
