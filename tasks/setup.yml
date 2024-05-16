@@ -65,6 +65,8 @@
         rule: allow
         port: "2379:2381"
         proto: tcp
+        src: "{{ hostvars[item].ansible_default_ipv4.address }}"
+      loop: "{{ groups['server'] }}"
 
     - name: If ufw enabled, allow default CIDRs
       when:
