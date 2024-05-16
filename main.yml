@@ -2,8 +2,6 @@
 - name: Manage K3S Cluster
   hosts: all
   become: true
-  vars_files:
-    - vars/main.yml
 
   tasks:
     - name: Validate operation value
