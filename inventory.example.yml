@@ -48,19 +48,24 @@ all:
         - 192.16.16.44
         - lb.example.com
 
-    # Some additional manifests to be applied after installation
-    # Helpful for initial setup of the cluster
-    manifests:
-      - "./setup/manifests/traefik.yaml"
-      - "./setup/manifests/nginx.yaml"
-
     # Helm charts to be installed after installation
     # Helpful for initial setup of the cluster
     charts:
-      - name: "traefik"
-        version: "9.0.0"
-        namespace: "kube-system"
-        values: "./charts/traefik/values.yaml"
+      - name: "cert-manager"
+        ref: "jetstack/cert-manager"
+        namespace: "cert-manager"
+        repo_name: "https://charts.jetstack.io"
+        repo: "https://charts.jetstack.io"
+      - name: "cnpg"
+        chart_ref: "cnpg/cloudnative-pg"
+        repo_name: "cnpg"
+        repo: "https://cloudnative-pg.github.io/charts"
+
+    # Some additional manifests to be applied after installation
+    # Helpful for initial setup of the cluster
+    manifests:
+      - "./setup/manifests/cert/values.yaml"
+      - "./setup/manifests/nginx.yaml"
 
     # Containerd can be configured to connect to private registries and use them to pull images as needed by the kubelet.
     # YAML here will be placed as the content of /etc/rancher/k3s/registries.yaml

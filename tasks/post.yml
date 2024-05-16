@@ -1,10 +1,20 @@
 ---
-- name: Reboot cluster servers staggered
+- name: Deploy Helm charts with external values files
   hosts: server
-  become: true
-  gather_facts: true
-  serial: 1
   tasks:
-    - name: Reboot
-      ansible.builtin.reboot:
-        test_command: kubectl get nodes
+    - name: Add or update Helm repository
+      community.kubernetes.helm_repository:
+        name: "{{ item.repo_name }}"
+        repo_url: "{{ item.repo }}"
+        state: present
+      loop: "{{ charts }}"
+
+    - name: Install or Update Helm chart
+      community.kubernetes.helm:
+        name: "{{ item.name }}"
+        chart_ref: "{{ item.name }}"
+        chart_repo_url: "{{ item.repo }}"
+        chart_version: "{{ item.version }}"
+        release_namespace: "{{ item.namespace | default('default') }}"
+        values: "{{ lookup('file', item.values) | from_yaml }}"
+      loop: "{{ charts }}"
