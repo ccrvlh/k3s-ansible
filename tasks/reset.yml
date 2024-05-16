@@ -1,4 +1,12 @@
 ---
+- name: Stop services
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: stopped
+  loop:
+    - k3s
+  ignore_errors: true
+
 - name: Run K3s Uninstall script [server]
   when: "'server' in group_names"
   ansible.builtin.command:
@@ -36,3 +44,23 @@
   ansible.builtin.shell:
     cmd: "rm -rf /home/{{ ansible_user }}/.k3s/*"
     removes: "/home/{{ ansible_user }}/.k3s/*"
+
+- name: Remove UFW etcd rules
+  when:
+    - groups['server'] | length > 1
+  community.general.ufw:
+    delete: true
+    port: "2379:2381"
+    proto: tcp
+    src: "{{ hostvars[item].ansible_default_ipv4.address }}"
+    rule: allow
+  loop: "{{ groups['server'] }}"
+
+- name: Remove ufw cluster cidr rules
+  when:
+    - groups['server'] | length > 1
+  community.general.ufw:
+    rule: allow
+    src: "{{ item }}"
+    delete: true
+  loop: "{{ (cluster_cidr + ',' + service_cidr) | split(',') }}"
