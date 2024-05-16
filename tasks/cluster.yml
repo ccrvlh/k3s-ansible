@@ -69,13 +69,37 @@
       failed_when: false
 
     - name: Wait for Master node to become Ready
-      ansible.builtin.command:
+      become: true
+      ansible.builtin.shell:
         cmd: "kubectl get nodes --no-headers | grep -E 'Ready|master'"
       register: kubectl_output
       until: "'Ready' in kubectl_output.stdout"
       retries: 10
       delay: 5
-      environment: "{{ lookup('env', 'KUBECONFIG=~/.kube/config') }}"
+      environment:
+        KUBECONFIG: /home/{{ ansible_user }}/.kube/config
+
+- name: Setup kubectl for user
+  block:
+    - name: Create kubectl symlink
+      when: lookup('fileglob', '/usr/local/bin/kubectl', errors='warn') | length == 0
+      ansible.builtin.file:
+        src: /usr/local/bin/k3s
+        dest: /usr/local/bin/kubectl
+        state: link
+
+    - name: Configure default KUBECONFIG for user
+      ansible.builtin.lineinfile:
+        path: ~{{ ansible_user }}/.bashrc
+        regexp: "export KUBECONFIG=~/.kube/config"
+        line: "export KUBECONFIG=~/.kube/config # Added by k3s-ansible"
+        state: present
+
+    - name: Configure kubectl autocomplete
+      ansible.builtin.lineinfile:
+        path: ~{{ ansible_user }}/.bashrc
+        regexp: '\.\s+<\(kubectl completion bash\)'
+        line: ". <(kubectl completion bash)  # Added by k3s-ansible"
 
 - name: Start other servers
   become: false
@@ -102,17 +126,17 @@
       failed_when: false
 
     - name: Verify that all server nodes joined
+      become: true
       ansible.builtin.command:
         cmd: >
-          k3s kubectl get nodes -l "node-role.kubernetes.io/control-plane=true" -o=jsonpath="{.items[*].metadata.name}"
+          kubectl get nodes -l "node-role.kubernetes.io/control-plane=true" -o=jsonpath="{.items[*].metadata.name}"
       register: nodes
       until: nodes.rc == 0 and (nodes.stdout.split() | length) == (groups['server'] | length)
       retries: 20
       delay: 10
       changed_when: false
 
-- name: Check kubectlctl on host
-  when: kubectl_installed.rc == 0
+- name: Check kubectl on host
   become: false
   block:
     - name: Check whether kubectl is installed on control node
@@ -123,11 +147,12 @@
       become: false
       changed_when: false
 
-- name: Apply K3S kubeconfig to control node
+- name: Apply k3s kubeconfig to control node
   when: kubectl_installed.rc == 0
   become: false
   block:
-    - name: Copy kubeconfig to control node
+    - name: Copy kubeconfig from first master to control node
+      when: inventory_hostname == groups['server'][0]
       ansible.builtin.fetch:
         src: "/home/{{ ansible_user }}/.kube/config"
         dest: "{{ kubeconfig }}"
@@ -135,7 +160,7 @@
 
     - name: Change server address in kubeconfig on control node
       ansible.builtin.shell: |
-        KUBECONFIG={{ kubeconfig }} kubectl config set-cluster default --server=https://{{ hostvars[groups['server'][0]]['ansible_host'] }}:{{ https_listen_port }}
+        KUBECONFIG={{ kubeconfig }} kubectl config set-cluster default --server=https://{{ hostvars[groups['server'][0]]['ansible_host'] }}:{{ config.https_listen_port }}
       delegate_to: 127.0.0.1
       register: csa_result
       changed_when:
@@ -160,25 +185,3 @@
       register: mv_result
       changed_when:
         - mv_result.rc == 0
-
-- name: Setup kubectl for user
-  block:
-    - name: Create kubectl symlink
-      when: lookup('fileglob', '/usr/local/bin/kubectl', errors='warn') | length == 0
-      ansible.builtin.file:
-        src: /usr/local/bin/k3s
-        dest: /usr/local/bin/kubectl
-        state: link
-
-    - name: Configure default KUBECONFIG for user
-      ansible.builtin.lineinfile:
-        path: ~{{ ansible_user }}/.bashrc
-        regexp: "export KUBECONFIG=~/.kube/config"
-        line: "export KUBECONFIG=~/.kube/config # Added by k3s-ansible"
-        state: present
-
-    - name: Configure kubectl autocomplete
-      ansible.builtin.lineinfile:
-        path: ~{{ ansible_user }}/.bashrc
-        regexp: '\.\s+<\(kubectl completion bash\)'
-        line: ". <(kubectl completion bash)  # Added by k3s-ansible"
