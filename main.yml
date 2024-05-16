@@ -12,5 +12,13 @@
           - operation in ['cluster', 'agent', 'reset', 'reboot', 'upgrade', 'setup']
         fail_msg: "Invalid operation specified. Must be 'cluster', 'agent', 'reset', 'reboot', 'setup' or 'upgrade'."
 
+    - name: Set environment variables
+      block:
+        - name: Convert list to dict
+          set_fact:
+            env_vars_dict: "{{ env_vars_dict | default({}) | combine({ item.name: item.value }) }}"
+          loop: "{{ env_vars_list }}"
+
     - name: "Starting {{ operation }} operation"
       include_tasks: tasks/{{ operation }}.yml
+      environment: "{{ env_vars_dict }}"
