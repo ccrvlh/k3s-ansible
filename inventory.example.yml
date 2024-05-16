@@ -19,11 +19,6 @@ all:
     ansible_port: 22
     ansible_user: root
     ansible_python_interpreter: /usr/bin/python3
-    cluster_cidr: "{{ config['cluster_cidr'] | default('10.42.0.0/16') }}"
-    service_cidr: "{{ config['service_cidr'] | default('10.43.0.0/16') }}"
-    kubeconfig: ~/.kube/config.new # noqa var-naming[no-role-prefix]
-    user_kubectl: true # noqa var-naming[no-role-prefix]
-    cluster_context: k3s-ansible
 
     # Environment variables
     # Those will be set on each node during the setup process
@@ -32,6 +27,15 @@ all:
     env_vars:
       ENV_VAR1: VALUE1
       ENV_VAR2: VALUE2
+
+    # Basic cluster configuration
+    # Not directly passed to the k3s config file
+    # but used to set up the cluster
+    cluster:
+      cluster_cidr: "{{ config['cluster_cidr'] | default('10.42.0.0/16') }}"
+      service_cidr: "{{ config['service_cidr'] | default('10.43.0.0/16') }}"
+      kubeconfig: ~/.kube/config.new # noqa var-naming[no-role-prefix]
+      context: k3s-ansible
 
     # Configuration variables
     # It will be passed directly to the k3s configuration file
@@ -67,7 +71,7 @@ all:
       - "./setup/manifests/cert/values.yaml"
       - "./setup/manifests/nginx.yaml"
 
-    # Containerd can be configured to connect to private registries and use them to pull images as needed by the kubelet.
+    # Private registry configuration
     # YAML here will be placed as the content of /etc/rancher/k3s/registries.yaml
     # See https://docs.k3s.io/installation/private-registry
     private_registry: |

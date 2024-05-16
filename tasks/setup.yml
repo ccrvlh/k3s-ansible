@@ -74,7 +74,7 @@
       community.general.ufw:
         rule: allow
         src: "{{ item }}"
-      loop: "{{ (cluster_cidr + ',' + service_cidr) | split(',') }}"
+      loop: "{{ (cluster['cluster_cidr'] + ',' + cluster['service_cidr']) | split(',') }}"
 
 - name: Check for Apparmor existence
   become: true

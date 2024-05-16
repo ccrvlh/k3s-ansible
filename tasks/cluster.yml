@@ -155,32 +155,32 @@
       when: inventory_hostname == groups['server'][0]
       ansible.builtin.fetch:
         src: "/home/{{ ansible_user }}/.kube/config"
-        dest: "{{ kubeconfig }}"
+        dest: "{{ cluster['kubeconfig'] }}"
         flat: true
 
     - name: Change server address in kubeconfig on control node
       ansible.builtin.shell: |
-        KUBECONFIG={{ kubeconfig }} kubectl config set-cluster default --server=https://{{ hostvars[groups['server'][0]]['ansible_host'] }}:{{ config.https_listen_port }}
+        KUBECONFIG={{ cluster['kubeconfig'] }} kubectl config set-cluster default --server=https://{{ hostvars[groups['server'][0]]['ansible_host'] }}:{{ config.https_listen_port }}
       delegate_to: 127.0.0.1
       register: csa_result
       changed_when:
         - csa_result.rc == 0
 
-    - name: Setup kubeconfig context on control node - {{ cluster_context }}
-      when: kubeconfig != "~/.kube/config"
+    - name: Setup kubeconfig context on control node - {{ cluster['context'] }}
+      when: cluster['kubeconfig'] != "~/.kube/config"
       ansible.builtin.replace:
-        path: "{{ kubeconfig }}"
+        path: "{{ cluster['kubeconfig'] }}"
         regexp: "name: default"
-        replace: "name: {{ cluster_context }}"
+        replace: "name: {{ cluster['context'] }}"
       delegate_to: 127.0.0.1
 
     - name: Merge with any existing kubeconfig on control node
-      when: kubeconfig != "~/.kube/config"
+      when: cluster['kubeconfig'] != "~/.kube/config"
       ansible.builtin.shell: |
         TFILE=$(mktemp)
-        KUBECONFIG={{ kubeconfig }} kubectl config set-context {{ cluster_context }} --user={{ cluster_context }} --cluster={{ cluster_context }}
-        KUBECONFIG={{ kubeconfig }} kubectl config view --flatten > ${TFILE}
-        mv ${TFILE} {{ kubeconfig }}
+        KUBECONFIG={{ cluster['kubeconfig'] }} kubectl config set-context {{ cluster['context'] }} --user={{ cluster['context'] }} --cluster={{ cluster['context'] }}
+        KUBECONFIG={{ cluster['kubeconfig'] }} kubectl config view --flatten > ${TFILE}
+        mv ${TFILE} {{ cluster['kubeconfig'] }}
       delegate_to: 127.0.0.1
       register: mv_result
       changed_when:

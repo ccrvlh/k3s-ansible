@@ -63,4 +63,4 @@
     rule: allow
     src: "{{ item }}"
     delete: true
-  loop: "{{ (cluster_cidr + ',' + service_cidr) | split(',') }}"
+  loop: "{{ (cluster['cluster_cidr'] + ',' + cluster['service_cidr']) | split(',') }}"
